@@ -11,7 +11,8 @@ const int togglePin = 3;
 
 
 int buttonState = 0;       
-long[] kleuren = {
+int toggleState = 0;       
+long kleuren [4] = {
     CRGB::Red,
     CRGB::Green,
     CRGB::Purple,
@@ -25,41 +26,55 @@ CRGB leds[NUM_LEDS];
 
 void setup() {
     FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
+    Serial.begin(9600);
 }
 
 void loop() {
     buttonState = digitalRead(buttonPin);
-
-    if (buttonState == HIGH) {
-        for (int i = 0; i <= NUM_LEDS; i++) {
-            leds[i] = Kleur;
-            FastLED.show();
-            delay(5);
+    {
+        if (buttonState == HIGH) {
+            on();
         }
     }
 
     delay(1000);
 
-    if (buttonState == HIGH) {
-        for (int i = NUM_LEDS; i >= 0; i--) {
-            leds[i] = CRGB::Black;
-            FastLED.show();
-            delay(5);
+    {
+        if (buttonState == HIGH) {
+            off();
         }
     }
-
     delay(1000);
 
     toggleState = digitalRead(togglePin);
-
-    if (togglePin == HIGH) {
-        if (currentColor + 1 < sizeof(kleuren)) {
-            currentColor = currentColor + 1;
-        } else {
-            currentColor = 0;
+    
+    {
+        if (togglePin == HIGH) {
+            if (currentColor + 1 < sizeof(kleuren)) {
+                currentColor = currentColor + 1;
+            } else {
+                currentColor = 0;
+            }
+            Kleur = kleuren[currentColor];
+            on();
         }
-        Kleur = kleuren[currentColor]
     }
+    Serial.println(Kleur);
+}
 
-    delay(1000);
+
+void on() {
+    for (int i = 0; i <= NUM_LEDS; i++) {
+        leds[i] = Kleur;
+        FastLED.show();
+        delay(5);
+    }
+}
+
+void off() {
+    for (int i = NUM_LEDS; i >= 0; i--) {
+        leds[i] = CRGB::Black;
+        FastLED.show();
+        delay(5);
+    }
 }
